@@ -2,7 +2,7 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { getItem, COUPONS } from "@/lib/data";
-import { Calendar, MapPin, Tag, Check, X } from "lucide-react";
+import { Calendar, MapPin, Tag, Check, X, PartyPopper } from "lucide-react";
 
 export const Route = createFileRoute("/book/$id")({
   head: () => ({
@@ -16,15 +16,17 @@ export const Route = createFileRoute("/book/$id")({
 
 const ROWS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const COLS = 12;
-const BOOKED = new Set(["A3", "A4", "C7", "D2", "D3", "F8", "F9", "G5", "H11"]);
+const INITIAL_BOOKED = ["A3", "A4", "C7", "D2", "D3", "F8", "F9", "G5", "H11"];
 
 function BookingPage() {
   const { id } = useParams({ from: "/book/$id" });
   const item = getItem(id);
+  const [booked, setBooked] = useState<Set<string>>(() => new Set(INITIAL_BOOKED));
   const [selected, setSelected] = useState<string[]>([]);
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState<{ code: string; amount: number; message: string } | null>(null);
   const [error, setError] = useState("");
+  const [confirmation, setConfirmation] = useState<{ seats: string[]; total: number } | null>(null);
 
   const price = item?.price ?? 0;
   const subtotal = selected.length * price;
@@ -50,7 +52,8 @@ function BookingPage() {
   }
 
   const toggleSeat = (seat: string) => {
-    if (BOOKED.has(seat)) return;
+    if (booked.has(seat)) return;
+    setConfirmation(null);
     setSelected((s) => (s.includes(seat) ? s.filter((x) => x !== seat) : [...s, seat]));
   };
 
@@ -68,6 +71,22 @@ function BookingPage() {
   const removeCoupon = () => {
     setApplied(null);
     setCoupon("");
+  };
+
+  const confirmBooking = () => {
+    if (selected.length === 0) return;
+    const seats = [...selected].sort();
+    const total = finalTotal;
+    setBooked((b) => {
+      const next = new Set(b);
+      seats.forEach((s) => next.add(s));
+      return next;
+    });
+    setConfirmation({ seats, total });
+    setSelected([]);
+    setApplied(null);
+    setCoupon("");
+    setError("");
   };
 
   return (
