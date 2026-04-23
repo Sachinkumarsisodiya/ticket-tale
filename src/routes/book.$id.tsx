@@ -26,6 +26,18 @@ function BookingPage() {
   const [applied, setApplied] = useState<{ code: string; amount: number; message: string } | null>(null);
   const [error, setError] = useState("");
 
+  const price = item?.price ?? 0;
+  const subtotal = selected.length * price;
+  const fee = selected.length > 0 ? Math.round(subtotal * 0.05) : 0;
+
+  const liveDiscount = useMemo(() => {
+    if (!applied) return 0;
+    const c = COUPONS[applied.code];
+    if (!c) return 0;
+    return c.type === "flat" ? c.discount : Math.round(subtotal * (c.discount / 100));
+  }, [applied, subtotal]);
+  const finalTotal = Math.max(0, subtotal + fee - liveDiscount);
+
   if (!item) {
     return (
       <Layout>
@@ -36,11 +48,6 @@ function BookingPage() {
       </Layout>
     );
   }
-
-  const subtotal = selected.length * item.price;
-  const fee = selected.length > 0 ? Math.round(subtotal * 0.05) : 0;
-  const discount = applied?.amount ?? 0;
-  const total = Math.max(0, subtotal + fee - discount);
 
   const toggleSeat = (seat: string) => {
     if (BOOKED.has(seat)) return;
