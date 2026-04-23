@@ -3,6 +3,7 @@ import { Search, MapPin, Menu, Ticket } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
+  { to: "/", label: "Home" },
   { to: "/movies", label: "Movies" },
   { to: "/sports", label: "Sports" },
   { to: "/sufi", label: "Sufi Nights" },
@@ -53,6 +54,7 @@ export function Header() {
                 to={l.to}
                 className="text-muted-foreground transition-colors hover:text-primary"
                 activeProps={{ className: "text-primary font-semibold" }}
+                activeOptions={l.to === "/" ? { exact: true } : undefined}
               >
                 {l.label}
               </Link>
@@ -71,6 +73,7 @@ export function Header() {
                   onClick={() => setOpen(false)}
                   className="block py-2 text-sm text-muted-foreground hover:text-primary"
                   activeProps={{ className: "text-primary font-semibold" }}
+                  activeOptions={l.to === "/" ? { exact: true } : undefined}
                 >
                   {l.label}
                 </Link>

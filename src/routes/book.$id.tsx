@@ -2,7 +2,7 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { getItem, COUPONS } from "@/lib/data";
-import { Calendar, MapPin, Tag, Check, X } from "lucide-react";
+import { Calendar, MapPin, Tag, Check, X, PartyPopper } from "lucide-react";
 
 export const Route = createFileRoute("/book/$id")({
   head: () => ({
@@ -16,15 +16,17 @@ export const Route = createFileRoute("/book/$id")({
 
 const ROWS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 const COLS = 12;
-const BOOKED = new Set(["A3", "A4", "C7", "D2", "D3", "F8", "F9", "G5", "H11"]);
+const INITIAL_BOOKED = ["A3", "A4", "C7", "D2", "D3", "F8", "F9", "G5", "H11"];
 
 function BookingPage() {
   const { id } = useParams({ from: "/book/$id" });
   const item = getItem(id);
+  const [booked, setBooked] = useState<Set<string>>(() => new Set(INITIAL_BOOKED));
   const [selected, setSelected] = useState<string[]>([]);
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState<{ code: string; amount: number; message: string } | null>(null);
   const [error, setError] = useState("");
+  const [confirmation, setConfirmation] = useState<{ seats: string[]; total: number } | null>(null);
 
   const price = item?.price ?? 0;
   const subtotal = selected.length * price;
@@ -50,7 +52,8 @@ function BookingPage() {
   }
 
   const toggleSeat = (seat: string) => {
-    if (BOOKED.has(seat)) return;
+    if (booked.has(seat)) return;
+    setConfirmation(null);
     setSelected((s) => (s.includes(seat) ? s.filter((x) => x !== seat) : [...s, seat]));
   };
 
@@ -68,6 +71,22 @@ function BookingPage() {
   const removeCoupon = () => {
     setApplied(null);
     setCoupon("");
+  };
+
+  const confirmBooking = () => {
+    if (selected.length === 0) return;
+    const seats = [...selected].sort();
+    const total = finalTotal;
+    setBooked((b) => {
+      const next = new Set(b);
+      seats.forEach((s) => next.add(s));
+      return next;
+    });
+    setConfirmation({ seats, total });
+    setSelected([]);
+    setApplied(null);
+    setCoupon("");
+    setError("");
   };
 
   return (
@@ -98,7 +117,7 @@ function BookingPage() {
                     <div className="flex gap-1.5">
                       {Array.from({ length: COLS }, (_, i) => {
                         const seat = `${row}${i + 1}`;
-                        const isBooked = BOOKED.has(seat);
+                        const isBooked = booked.has(seat);
                         const isSel = selected.includes(seat);
                         return (
                           <button
@@ -134,6 +153,16 @@ function BookingPage() {
         {/* RIGHT: Summary */}
         <aside className="h-fit space-y-4 rounded-xl border border-border bg-card p-5 lg:sticky lg:top-32">
           <h2 className="text-lg font-bold">Booking Summary</h2>
+
+          {confirmation && (
+            <div className="flex items-start gap-2 rounded-md border border-emerald-500/50 bg-emerald-500/10 p-3 text-sm text-emerald-400">
+              <PartyPopper className="h-4 w-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Booking confirmed!</p>
+                <p className="text-xs mt-1">Seats {confirmation.seats.join(", ")} booked for ₹{confirmation.total}.</p>
+              </div>
+            </div>
+          )}
 
           <div>
             <p className="text-xs text-muted-foreground">Selected Seats ({selected.length})</p>
@@ -191,10 +220,11 @@ function BookingPage() {
           </div>
 
           <button
+            onClick={confirmBooking}
             disabled={selected.length === 0}
             className="w-full rounded-md bg-primary py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Proceed to Pay
+            Book Now
           </button>
         </aside>
       </div>
