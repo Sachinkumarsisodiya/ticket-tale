@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Twitter, Youtube, Ticket, Mail, Phone, MapPin, Send } from "lucide-react";
+import { Ticket, Mail, Phone, MapPin, Send } from "lucide-react";
 
 export function Footer() {
   return (
@@ -24,8 +24,8 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-12 sm:grid-cols-2 lg:grid-cols-4">
+        <div>
           <div className="flex items-center gap-2 text-xl font-bold">
             <Ticket className="h-6 w-6 text-primary" />
             book<span className="text-primary">your</span>show
@@ -43,10 +43,9 @@ export function Footer() {
         <div>
           <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider">Company</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
+            <li><Link to="/" className="hover:text-primary">Home</Link></li>
             <li><Link to="/about" className="hover:text-primary">About Us</Link></li>
             <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
-            <li><a href="#" className="hover:text-primary">Careers</a></li>
-            <li><a href="#" className="hover:text-primary">Press</a></li>
           </ul>
         </div>
 
@@ -62,27 +61,11 @@ export function Footer() {
         </div>
 
         <div>
-          <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider">Help</h4>
+          <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider">Legal</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
             <li><Link to="/terms" className="hover:text-primary">Terms & Conditions</Link></li>
-            <li><a href="#" className="hover:text-primary">FAQs</a></li>
-            <li><a href="#" className="hover:text-primary">Refunds</a></li>
           </ul>
-          <div className="mt-5">
-            <h4 className="mb-3 text-sm font-semibold uppercase tracking-wider">Follow</h4>
-            <div className="flex gap-3">
-              {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary hover:bg-primary hover:text-primary-foreground"
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
       <div className="border-t border-border py-5 text-center text-xs text-muted-foreground">
