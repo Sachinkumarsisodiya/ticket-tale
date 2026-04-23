@@ -70,15 +70,6 @@ function BookingPage() {
     setCoupon("");
   };
 
-  // Recompute discount if seats change after applying
-  const liveDiscount = useMemo(() => {
-    if (!applied) return 0;
-    const c = COUPONS[applied.code];
-    if (!c) return 0;
-    return c.type === "flat" ? c.discount : Math.round(subtotal * (c.discount / 100));
-  }, [applied, subtotal]);
-  const finalTotal = Math.max(0, subtotal + fee - liveDiscount);
-
   return (
     <Layout>
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[1fr_380px] lg:px-6">
