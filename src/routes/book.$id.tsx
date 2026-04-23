@@ -117,7 +117,7 @@ function BookingPage() {
                     <div className="flex gap-1.5">
                       {Array.from({ length: COLS }, (_, i) => {
                         const seat = `${row}${i + 1}`;
-                        const isBooked = BOOKED.has(seat);
+                        const isBooked = booked.has(seat);
                         const isSel = selected.includes(seat);
                         return (
                           <button
@@ -153,6 +153,16 @@ function BookingPage() {
         {/* RIGHT: Summary */}
         <aside className="h-fit space-y-4 rounded-xl border border-border bg-card p-5 lg:sticky lg:top-32">
           <h2 className="text-lg font-bold">Booking Summary</h2>
+
+          {confirmation && (
+            <div className="flex items-start gap-2 rounded-md border border-emerald-500/50 bg-emerald-500/10 p-3 text-sm text-emerald-400">
+              <PartyPopper className="h-4 w-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Booking confirmed!</p>
+                <p className="text-xs mt-1">Seats {confirmation.seats.join(", ")} booked for ₹{confirmation.total}.</p>
+              </div>
+            </div>
+          )}
 
           <div>
             <p className="text-xs text-muted-foreground">Selected Seats ({selected.length})</p>
@@ -210,10 +220,11 @@ function BookingPage() {
           </div>
 
           <button
+            onClick={confirmBooking}
             disabled={selected.length === 0}
             className="w-full rounded-md bg-primary py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Proceed to Pay
+            Book Now
           </button>
         </aside>
       </div>
