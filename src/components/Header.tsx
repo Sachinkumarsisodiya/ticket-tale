@@ -3,6 +3,7 @@ import { Search, MapPin, Menu, Ticket } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
+  { to: "/", label: "Home" },
   { to: "/movies", label: "Movies" },
   { to: "/sports", label: "Sports" },
   { to: "/sufi", label: "Sufi Nights" },
